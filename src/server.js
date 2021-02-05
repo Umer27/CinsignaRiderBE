@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const { setWSSServer } = require("./utils");
 const { ENV_VARS } = require("../config");
 const { PORT, APP_NAME } = ENV_VARS;
-const SERVER_PORT = PORT || 5002;
+const SERVER_PORT = PORT || 3001;
 
 const { generalAuth, adminAuth } = require("./middleware/authenticate");
 const usersController = require("./controllers/usersController");

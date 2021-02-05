@@ -3,8 +3,8 @@ const { USER_PUBLIC_FIELDS } = require('../../config');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS} = require('../../config');
-const { User, Attendance, Record } = require('../models/');
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS } = require('../../config');
+const { User, Attendance, Record, Shift } = require('../models/');
 
 const {
     cloudinaryClient,
@@ -20,7 +20,7 @@ const { ENV_NAME } = ENV_VARS;
 const exclude = USER_PRIVATE_FIELDS;
 
 
-exports.getUser = async(req, res) => getInstance(req, res, User, undefined, exclude);
+exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
 exports.getUsers = async(req, res) => getInstances(req, res, User, undefined, exclude);
 
 exports.postUser = async(req, res) => {
@@ -80,7 +80,7 @@ exports.getUserStats = async(req, res) => {
     const id = req.params.id
     try {
         const user = await User.findOne({
-            where: { id: id}
+            where: { id: id }
         })
         assertExistence(user)
 
