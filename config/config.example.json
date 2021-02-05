@@ -1,0 +1,32 @@
+{
+    "development": {
+      "username": "username",
+      "password": "password",
+      "database": "database",
+      "host": "host",
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": true
+      }
+    },
+    "staging": {
+      "username": "bastxrlloyxlsc",
+      "password": "67a8622c5c01dd6c522b356e677a78ec207783cd4318b3c71d930c1937edbd48",
+      "database": "d56noplgb8qfaq",
+      "host": "ec2-54-243-238-226.compute-1.amazonaws.com",
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": true
+      }
+    },
+    "production": {
+      "username": "uccdcbdb46uacv",
+      "password": "pdec8c9cdbad8a25053f9d77e9fa23ca7ba3ab13c2cea9e6400e82fc3dc57a5fe",
+      "database": "de4k8kj7qp5cos",
+      "host": "ec2-52-200-206-123.compute-1.amazonaws.com",
+      "dialect": "postgres",
+      "dialectOptions": {
+        "ssl": true
+      }
+    }
+  }
