@@ -86,11 +86,11 @@ exports.getUserStats = async(req, res) => {
 
         const stats = await Attendance.findAll({
             where: {
-                riderId: id
+                riderId: id,
             },
             include: [ {
-                model: Record,
-                as: 'record'
+                model: Shift,
+                as: 'shift'
             } ]
         })
         res.send(stats)

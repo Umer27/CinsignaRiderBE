@@ -50,7 +50,7 @@ app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 
 /*Admin*/
 // specific rider detail
-app.get('/rider/:id', adminAuth, usersController.getUserStats)
+app.get('/rider/:id', generalAuth, usersController.getUserStats)
 app.get('/riders', generalAuth, riderController.todayRecords)
 
 /**

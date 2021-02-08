@@ -41,7 +41,11 @@ exports.riderOnline = async(req, res) => {
             },
             include: [ {
                 model: Attendance,
-                as: 'attendance'
+                as: 'attendance',
+                include: [ {
+                    model: Shift,
+                    as: "shift"
+                } ]
             } ]
         })
         let attendance;
