@@ -15,6 +15,7 @@ const {
     getInstances,
     deleteInstance,
     deleteInstances,
+    geocoder
 } = require('../utils');
 const { ENV_NAME } = ENV_VARS;
 const exclude = USER_PRIVATE_FIELDS;
@@ -59,14 +60,20 @@ exports.patchUser = async(req, res) => {
             }
         }
 
+        if(body.currentLocation){
+            const startLocation = body.currentLocation
+            const coder = await geocoder.reverse({
+                lat: startLocation.split(',')[0],
+                lon: startLocation.split(',')[1]
+            })
+            body.currentLocationAddress = coder[0].formattedAddress
+        }
+
         // Apply the updates
         await user.update(body);
         user = user.toJSON();
 
         delete user.password
-        delete user.ccv
-        delete user.creditCard
-        delete user.creditCardExpiredAt
 
         res.json(user);
     } catch(error) {

@@ -142,5 +142,43 @@ exports.todayRecords = async(req, res) => {
     }
 }
 
+exports.currentMonth = async(req, res) => {
+    try {
+        const user = await User.findOne({
+            where: { id: req.userId },
+            include: [ {
+                model: Shift,
+                as: 'shift'
+            } ]
+        })
+        assertExistence(user)
+
+        const daysInMonth = [];
+
+        const monthDate = moment().startOf('month');
+
+        _.times(monthDate.daysInMonth(), function(n) {
+            daysInMonth.push(monthDate);  // your format
+            monthDate.add(1, 'day');
+        });
+
+        const monthRecord = await Attendance.findAll({
+            where: {
+                riderId: req.userId,
+                createdAt: {
+                    [Op.in]: daysInMonth,
+                }
+            },
+            include: [ {
+                model: Record,
+                as: 'record'
+            } ]
+        })
+        res.send(monthRecord)
+    } catch(e) {
+        console.log(e)
+    }
+}
+
 
 

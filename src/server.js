@@ -52,6 +52,7 @@ app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 // specific rider detail
 app.get('/rider/:id', generalAuth, usersController.getUserStats)
 app.get('/riders', generalAuth, riderController.todayRecords)
+app.get('/riders/:id', generalAuth, riderController.currentMonth)
 
 /**
  *  Run the server

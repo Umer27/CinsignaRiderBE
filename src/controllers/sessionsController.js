@@ -5,7 +5,8 @@ const {
     jwtClient,
     getInstance,
     errorHandler,
-    assertExistence
+    assertExistence,
+    geocoder
 } = require('../utils');
 
 const exclude = SESSION_PRIVATE_FIELDS;
@@ -21,7 +22,12 @@ exports.postSession = async(req, res) => {
         assertExistence(user)
         let session = await Session.create(body);
         assertExistence(session);
-        await user.update({ currentLocation })
+        const startLocation = currentLocation
+        const coder = await geocoder.reverse({
+            lat: startLocation.split(',')[0],
+            lon: startLocation.split(',')[1]
+        })
+        await user.update({ currentLocation, currentLocationAddress: coder[0].formattedAddress })
         await session.setUser(user);
         session = session.toJSON();
         const authToken = jwtClient.sign({
