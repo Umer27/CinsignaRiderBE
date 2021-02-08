@@ -134,6 +134,9 @@ exports.todayRecords = async(req, res) => {
             include: [ {
                 model: Record,
                 as: 'record'
+            }, {
+                model: Shift,
+                as: 'shift'
             } ]
         })
         res.send(todayRecords)
