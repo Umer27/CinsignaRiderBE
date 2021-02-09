@@ -1,9 +1,10 @@
 const { USER_PUBLIC_FIELDS } = require('../../config');
+const uuid = require('uuid/v4');
 
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS } = require('../../config');
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS, BULK_USERS } = require('../../config');
 const { User, Attendance, Record, Shift } = require('../models/');
 
 const {
@@ -26,13 +27,25 @@ exports.getUsers = async(req, res) => getInstances(req, res, User, undefined, ex
 
 exports.postUser = async(req, res) => {
     const body = _.pick(req.body, USER_INPUT_FIELDS);
-    if('password' in body)
-        body.password = bcrypt.hashSync(body.password, 10);
     try {
         const instance = await User.create(body);
         let user = instance.toJSON()
         delete user.password
         res.send(user);
+    } catch(error) {
+        errorHandler(res, error);
+    }
+
+}
+exports.postBulkUser = async(req, res) => {
+    const body = _.pick(req.body, BULK_USERS);
+    const { bulk } = body
+    try {
+        for(const user of bulk) {
+            user.id = uuid()
+        }
+        const instance = await User.bulkCreate(bulk);
+        res.send(instance);
     } catch(error) {
         errorHandler(res, error);
     }
