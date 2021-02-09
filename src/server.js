@@ -28,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/users", generalAuth, usersController.getUsers);
 app.get("/users/:id", generalAuth, usersController.getUser);
 app.post("/users", adminAuth, usersController.postUser);
+app.post("/users/bulk", adminAuth, usersController.postBulkUser);
 app.patch("/users/:id", generalAuth, usersController.patchUser);
 app.delete("/users/:id", adminAuth, usersController.deleteUser);
 

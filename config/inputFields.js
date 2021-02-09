@@ -50,3 +50,7 @@ exports.OFFLINE_INPUT = [
     'currentLocation',
     'recordId'
 ]
+
+exports.BULK_USERS = [
+    'bulk'
+]
