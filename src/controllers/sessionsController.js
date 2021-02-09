@@ -18,7 +18,7 @@ exports.postSession = async(req, res) => {
     const body = _.pick(req.body, SESSION_INPUT_FIELDS);
     const { currentLocation, phoneNumber, mac } = body
     try {
-        let user = await User.findOne({ phoneNumber, mac });
+        let user = await User.findOne({ where: { phoneNumber, mac } });
         assertExistence(user)
         let session = await Session.create(body);
         assertExistence(session);
