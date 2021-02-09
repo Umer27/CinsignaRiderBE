@@ -3,16 +3,21 @@ const { SHIFT_INPUT_FIELDS } = require('../../config');
 const { Shift } = require('../models/');
 const {
     getInstance,
-    getInstances,
     errorHandler,
     assertExistence,
     geocoder
 } = require('../utils');
 
+
 exports.getShift = async(req, res) => getInstance(req, res, Shift, undefined, []);
 exports.getShifts = async(req, res) => {
-    const shifts = await Shift.findAll()
-    res.json(shifts)
+    try {
+        const shifts = await Shift.findAll()
+        res.json(shifts)
+    } catch(e) {
+        console.log(e)
+    }
+
 }
 
 /* Custom POST */
@@ -20,7 +25,7 @@ exports.postShift = async(req, res) => {
     const body = _.pick(req.body, SHIFT_INPUT_FIELDS);
     const { category } = body
     try {
-        let shift = await Shift.findOne({ where: {category} });
+        let shift = await Shift.findOne({ where: { category } });
         if(!_.isEmpty(shift)){
             throw {
                 error: new Error(),
@@ -29,8 +34,6 @@ exports.postShift = async(req, res) => {
                 msg: `Change the category name`,
             }
         }
-
-        console.log(body.end-body.start)
         const newShift = await Shift.create(body)
         res.json(newShift);
     } catch(error) {
@@ -51,7 +54,6 @@ exports.deleteShift = async(req, res) => {
 }
 
 exports.currentLocationName = async(req, res) => {
-
     try {
         const coder = await geocoder.reverse({
             lat: "31.4700053",

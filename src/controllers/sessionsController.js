@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { SESSION_INPUT_FIELDS, SESSION_PRIVATE_FIELDS, USER_STATUS, USER_ROLES } = require('../../config');
+const { SESSION_INPUT_FIELDS, SESSION_PRIVATE_FIELDS } = require('../../config');
 const { User, Session } = require('../models/');
 const {
     jwtClient,
@@ -8,7 +8,6 @@ const {
     assertExistence,
     geocoder
 } = require('../utils');
-
 const exclude = SESSION_PRIVATE_FIELDS;
 
 exports.getSession = async(req, res) => getInstance(req, res, Session, undefined, exclude);

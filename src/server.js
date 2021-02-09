@@ -2,7 +2,6 @@ const _ = require("lodash");
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
-const { setWSSServer } = require("./utils");
 const { ENV_VARS } = require("../config");
 const { PORT, APP_NAME } = ENV_VARS;
 const SERVER_PORT = PORT || 4000;

@@ -1,6 +1,6 @@
 const _ = require('lodash');
 const { ONLINE_INPUT, OFFLINE_INPUT, ATTENDANCE_STATUS, RECORD_STATUS } = require('../../config');
-const { Attendance, Record, User, Shift, sequelize } = require('../models/');
+const { Attendance, Record, User, Shift } = require('../models/');
 const {
     errorHandler,
     assertExistence,

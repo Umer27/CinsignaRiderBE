@@ -1,12 +1,7 @@
-const { USER_PUBLIC_FIELDS } = require('../../config');
 const uuid = require('uuid/v4');
-
 const _ = require('lodash');
-const bcrypt = require('bcrypt');
-
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS, BULK_USERS,OFFLINE_INPUT} = require('../../config');
-const { User, Attendance, Record, Shift } = require('../models/');
-
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS} = require('../../config');
+const { User, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
     assertExistence,
@@ -20,6 +15,7 @@ const exclude = USER_PRIVATE_FIELDS;
 
 
 exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
+
 exports.getUsers = async(req, res) => getInstances(req, res, User, undefined, exclude);
 
 exports.postUser = async(req, res) => {
@@ -34,6 +30,7 @@ exports.postUser = async(req, res) => {
     }
 
 }
+
 exports.postBulkUser = async(req, res) => {
     const body = _.pick(req.body, BULK_USERS);
     const { bulk } = body
