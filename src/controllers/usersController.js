@@ -4,12 +4,10 @@ const uuid = require('uuid/v4');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS, BULK_USERS } = require('../../config');
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS, BULK_USERS,OFFLINE_INPUT} = require('../../config');
 const { User, Attendance, Record, Shift } = require('../models/');
 
 const {
-    cloudinaryClient,
-    multerClient,
     errorHandler,
     assertExistence,
     getInstance,
@@ -18,7 +16,6 @@ const {
     deleteInstances,
     geocoder
 } = require('../utils');
-const { ENV_NAME } = ENV_VARS;
 const exclude = USER_PRIVATE_FIELDS;
 
 
@@ -94,8 +91,6 @@ exports.patchUser = async(req, res) => {
     }
 }
 
-/* Custom Image Upload */
-
 exports.getUserStats = async(req, res) => {
     const id = req.params.id
     try {
@@ -114,6 +109,17 @@ exports.getUserStats = async(req, res) => {
             } ]
         })
         res.send(stats)
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+exports.searchUser = async(req, res) => {
+    const alias = req.query.alias
+    try {
+        const user = await User.findOne({ where: { alias } })
+        assertExistence(user)
+        res.send(user)
     } catch(e) {
         console.log(e)
     }

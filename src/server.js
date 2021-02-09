@@ -54,6 +54,8 @@ app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 app.get('/rider/:id', generalAuth, usersController.getUserStats)
 app.get('/riders', generalAuth, riderController.todayRecords)
 app.get('/riders/:id', generalAuth, riderController.currentMonth)
+app.get('/admin/todayRecords', generalAuth, riderController.todayRecords)
+app.get('/admin/search/', generalAuth, usersController.searchUser)
 
 /**
  *  Run the server

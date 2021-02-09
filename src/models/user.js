@@ -2,6 +2,7 @@ const _ = require('lodash');
 const uuid = require('uuid/v4');
 const bcrypt = require('bcrypt');
 const { USER_ROLES, USER_PRIVATE_FIELDS } = require('../../config');
+const { nanoid } = require('nanoid')
 
 module.exports = (sequelize, type) => {
     const User = sequelize.define('user', {
@@ -26,6 +27,10 @@ module.exports = (sequelize, type) => {
             validate: {
                 len: [ 1, 30 ]
             }
+        },
+        alias: {
+            type: type.STRING,
+            defaultValue: nanoid(5)
         },
         phoneNumber: {
             type: type.STRING,
