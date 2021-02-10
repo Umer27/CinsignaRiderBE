@@ -11,6 +11,7 @@ const usersController = require("./controllers/usersController");
 const sessionsController = require("./controllers/sessionsController");
 const shiftController = require("./controllers/shiftController");
 const riderController = require("./controllers/riderController");
+const adminController = require("./controllers/adminController");
 
 const app = express();
 const server = require("http").createServer(app);
@@ -52,9 +53,11 @@ app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 // specific rider detail
 app.get('/rider/:id', generalAuth, usersController.getUserStats)
 app.get('/riders', generalAuth, riderController.todayRecords)
-app.get('/riders/:id', generalAuth, riderController.currentMonth)
 app.get('/admin/todayRecords', generalAuth, riderController.todayRecords)
-app.get('/admin/search/', generalAuth, usersController.searchUser)
+//search
+app.get('/admin/search/', adminAuth, usersController.searchUser)
+app.get('/admin/rider/:id', adminAuth, riderController.filterDate)
+app.get('/admin/location/riders', adminAuth, adminController.liveRiders)
 
 /**
  *  Run the server

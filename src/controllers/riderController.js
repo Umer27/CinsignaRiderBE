@@ -170,10 +170,12 @@ exports.adminTodayRecords = async(req, res) => {
     }
 }
 
-exports.currentMonth = async(req, res) => {
+exports.filterDate = async(req, res) => {
+    const userId = req.params.id
+    const filter = req.query.filter // month,week,year
     try {
         const user = await User.findOne({
-            where: { id: req.userId },
+            where: { id: userId },
             include: [ {
                 model: Shift,
                 as: 'shift'
@@ -181,20 +183,13 @@ exports.currentMonth = async(req, res) => {
         })
         assertExistence(user)
 
-        const daysInMonth = [];
-
-        const monthDate = moment().startOf('month');
-
-        _.times(monthDate.daysInMonth(), function(n) {
-            daysInMonth.push(monthDate);  // your format
-            monthDate.add(1, 'day');
-        });
+        let startDate = moment().startOf(filter);
 
         const monthRecord = await Attendance.findAll({
             where: {
-                riderId: req.userId,
+                riderId: userId,
                 createdAt: {
-                    [Op.in]: daysInMonth,
+                    [Op.gt]: startDate
                 }
             },
             include: [ {

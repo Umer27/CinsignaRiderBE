@@ -50,7 +50,7 @@ Attendance.belongsTo(User, {
 Attendance.belongsTo(Shift)
 Attendance.hasMany(Record, { as: 'record' })
 //record
-Record.belongsTo(User, { foreignKey: 'riderId' })
+Record.belongsTo(User, { foreignKey: 'riderId', as: 'rider' })
 Record.belongsTo(Attendance)
 
 /**
