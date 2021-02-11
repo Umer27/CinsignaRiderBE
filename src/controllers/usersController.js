@@ -1,15 +1,8 @@
-const { USER_PUBLIC_FIELDS } = require('../../config');
 const uuid = require('uuid/v4');
-
 const _ = require('lodash');
-const bcrypt = require('bcrypt');
-
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, ENV_VARS, BULK_USERS } = require('../../config');
-const { User, Attendance, Record, Shift } = require('../models/');
-
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS } = require('../../config');
+const { User, Attendance, Shift } = require('../models/');
 const {
-    cloudinaryClient,
-    multerClient,
     errorHandler,
     assertExistence,
     getInstance,
@@ -18,11 +11,15 @@ const {
     deleteInstances,
     geocoder
 } = require('../utils');
-const { ENV_NAME } = ENV_VARS;
 const exclude = USER_PRIVATE_FIELDS;
+const {
+    getRequestQueryInfo,
+    getResponseQueryInfo
+} = require('../utils/helpers')
 
 
 exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
+
 exports.getUsers = async(req, res) => getInstances(req, res, User, undefined, exclude);
 
 exports.postUser = async(req, res) => {
@@ -37,6 +34,7 @@ exports.postUser = async(req, res) => {
     }
 
 }
+
 exports.postBulkUser = async(req, res) => {
     const body = _.pick(req.body, BULK_USERS);
     const { bulk } = body
@@ -94,15 +92,21 @@ exports.patchUser = async(req, res) => {
     }
 }
 
-/* Custom Image Upload */
-
 exports.getUserStats = async(req, res) => {
     const id = req.params.id
+    let { where, limit, offset, order, attributes = undefined } = getRequestQueryInfo(req);
     try {
         const user = await User.findOne({
             where: { id: id }
         })
         assertExistence(user)
+
+        const count = await Attendance.count({
+            where: {
+                riderId: id,
+            }
+        });
+        const { pages, page, newOffset } = getResponseQueryInfo(count, limit, offset);
 
         const stats = await Attendance.findAll({
             where: {
@@ -111,9 +115,27 @@ exports.getUserStats = async(req, res) => {
             include: [ {
                 model: Shift,
                 as: 'shift'
-            } ]
+            } ],
+            offset: newOffset,
+            limit
         })
-        res.send(stats)
+        res.send({
+            stats,
+            count,
+            page,
+            pages
+        })
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+exports.searchUser = async(req, res) => {
+    const alias = req.query.alias
+    try {
+        const user = await User.findOne({ where: { alias } })
+        assertExistence(user)
+        res.send(user)
     } catch(e) {
         console.log(e)
     }

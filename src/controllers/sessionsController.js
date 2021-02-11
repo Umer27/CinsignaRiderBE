@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { SESSION_INPUT_FIELDS, SESSION_PRIVATE_FIELDS, USER_STATUS, USER_ROLES } = require('../../config');
+const { SESSION_INPUT_FIELDS, SESSION_PRIVATE_FIELDS } = require('../../config');
 const { User, Session } = require('../models/');
 const {
     jwtClient,
@@ -8,7 +8,8 @@ const {
     assertExistence,
     geocoder
 } = require('../utils');
-
+const { ENV_VARS, USER_ROLES } = require('../../config');
+const { ADMIN_AUTH } = ENV_VARS
 const exclude = SESSION_PRIVATE_FIELDS;
 
 exports.getSession = async(req, res) => getInstance(req, res, Session, undefined, exclude);
@@ -22,19 +23,26 @@ exports.postSession = async(req, res) => {
         assertExistence(user)
         let session = await Session.create(body);
         assertExistence(session);
-        const startLocation = currentLocation
-        const coder = await geocoder.reverse({
-            lat: startLocation.split(',')[0],
-            lon: startLocation.split(',')[1]
-        })
+        let coder
+        if(body.currentLocation){
+            coder = await geocoder.reverse({
+                lat: currentLocation.split(',')[0],
+                lon: currentLocation.split(',')[1]
+            })
+        }
         await user.update({ currentLocation, currentLocationAddress: coder[0].formattedAddress })
         await session.setUser(user);
         session = session.toJSON();
-        const authToken = jwtClient.sign({
-            payload: session.id,
-            expiresIn: '1d' // 1 day expiration
-        });
+        let authToken
+        if(user.role !== USER_ROLES.ADMIN)
+            authToken = jwtClient.sign({
+                payload: session.id,
+                expiresIn: '1d' // 1 day expiration
+            });
+        if(user.role === USER_ROLES.ADMIN)
+            authToken = ADMIN_AUTH
         res.set({ 'Auth': authToken });
+        session.role = user.role
         res.json(session);
     } catch(error) {
         errorHandler(res, error);

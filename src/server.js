@@ -2,7 +2,6 @@ const _ = require("lodash");
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
-const { setWSSServer } = require("./utils");
 const { ENV_VARS } = require("../config");
 const { PORT, APP_NAME } = ENV_VARS;
 const SERVER_PORT = PORT || 4000;
@@ -12,6 +11,7 @@ const usersController = require("./controllers/usersController");
 const sessionsController = require("./controllers/sessionsController");
 const shiftController = require("./controllers/shiftController");
 const riderController = require("./controllers/riderController");
+const adminController = require("./controllers/adminController");
 
 const app = express();
 const server = require("http").createServer(app);
@@ -51,9 +51,13 @@ app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 
 /*Admin*/
 // specific rider detail
-app.get('/rider/:id', generalAuth, usersController.getUserStats)
+app.get('/admin/rider/:id', generalAuth, usersController.getUserStats)
+app.get('/admin/filter/rider/:id', adminAuth, riderController.filterDate)
 app.get('/riders', generalAuth, riderController.todayRecords)
-app.get('/riders/:id', generalAuth, riderController.currentMonth)
+app.get('/admin/todayRecords', generalAuth, adminController.adminTodayRecords)
+//search
+app.get('/admin/search/', adminAuth, usersController.searchUser)
+app.get('/admin/location/riders', adminAuth, adminController.liveRiders)
 
 /**
  *  Run the server
