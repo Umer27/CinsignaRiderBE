@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS} = require('../../config');
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS } = require('../../config');
 const { User, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
@@ -12,6 +12,10 @@ const {
     geocoder
 } = require('../utils');
 const exclude = USER_PRIVATE_FIELDS;
+const {
+    getRequestQueryInfo,
+    getResponseQueryInfo
+} = require('../utils/helpers')
 
 
 exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
@@ -90,11 +94,19 @@ exports.patchUser = async(req, res) => {
 
 exports.getUserStats = async(req, res) => {
     const id = req.params.id
+    let { where, limit, offset, order, attributes = undefined } = getRequestQueryInfo(req);
     try {
         const user = await User.findOne({
             where: { id: id }
         })
         assertExistence(user)
+
+        const count = await Attendance.count({
+            where: {
+                riderId: id,
+            }
+        });
+        const { pages, page, newOffset } = getResponseQueryInfo(count, limit, offset);
 
         const stats = await Attendance.findAll({
             where: {
@@ -103,9 +115,16 @@ exports.getUserStats = async(req, res) => {
             include: [ {
                 model: Shift,
                 as: 'shift'
-            } ]
+            } ],
+            offset: newOffset,
+            limit
         })
-        res.send(stats)
+        res.send({
+            stats,
+            count,
+            page,
+            pages
+        })
     } catch(e) {
         console.log(e)
     }

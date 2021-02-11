@@ -145,31 +145,6 @@ exports.todayRecords = async(req, res) => {
     }
 }
 
-exports.adminTodayRecords = async(req, res) => {
-    try {
-        const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = new Date();
-        const todayRecords = await Attendance.findAll({
-            where: {
-                createdAt: {
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW
-                }
-            },
-            include: [ {
-                model: Record,
-                as: 'record'
-            }, {
-                model: Shift,
-                as: 'shift'
-            } ]
-        })
-        res.send(todayRecords)
-    } catch(e) {
-        console.log(e)
-    }
-}
-
 exports.filterDate = async(req, res) => {
     const userId = req.params.id
     const filter = req.query.filter // month,week,year

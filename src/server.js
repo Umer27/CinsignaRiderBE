@@ -51,12 +51,12 @@ app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 
 /*Admin*/
 // specific rider detail
-app.get('/rider/:id', generalAuth, usersController.getUserStats)
+app.get('/admin/rider/:id', generalAuth, usersController.getUserStats)
+app.get('/admin/filter/rider/:id', adminAuth, riderController.filterDate)
 app.get('/riders', generalAuth, riderController.todayRecords)
-app.get('/admin/todayRecords', generalAuth, riderController.todayRecords)
+app.get('/admin/todayRecords', generalAuth, adminController.adminTodayRecords)
 //search
 app.get('/admin/search/', adminAuth, usersController.searchUser)
-app.get('/admin/rider/:id', adminAuth, riderController.filterDate)
 app.get('/admin/location/riders', adminAuth, adminController.liveRiders)
 
 /**
