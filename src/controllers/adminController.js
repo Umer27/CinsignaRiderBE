@@ -1,11 +1,11 @@
 const _ = require('lodash');
 const { RECORD_STATUS } = require('../../config');
-const { Record, User, sequelize,Attendance,Shift } = require('../models/');
+const { Record, User, sequelize, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
 } = require('../utils');
 const { Op } = require("sequelize");
-
+const moment = require('moment')
 
 /* Custom POST */
 exports.liveRiders = async(req, res) => {
@@ -49,6 +49,25 @@ exports.adminTodayRecords = async(req, res) => {
             }, {
                 model: Shift,
                 as: 'shift'
+            } ]
+        })
+        res.send(todayRecords)
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+exports.history = async(req, res) => {
+    try {
+        const todayRecords = await Attendance.findAll({
+            where: {
+                createdAt: {
+                    [Op.gte]: moment().subtract('1', 'day').toDate().setHours(0, 0, 0, 0)
+                }
+            },
+            include: [ {
+                model: Record,
+                as: 'record'
             } ]
         })
         res.send(todayRecords)

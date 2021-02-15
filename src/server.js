@@ -58,6 +58,7 @@ app.get('/admin/todayRecords', generalAuth, adminController.adminTodayRecords)
 //search
 app.get('/admin/search/', adminAuth, usersController.searchUser)
 app.get('/admin/location/riders', adminAuth, adminController.liveRiders)
+app.get('/admin/history', adminAuth, adminController.history)
 
 /**
  *  Run the server
