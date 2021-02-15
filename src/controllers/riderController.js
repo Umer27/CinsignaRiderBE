@@ -147,7 +147,7 @@ exports.todayRecords = async(req, res) => {
 
 exports.filterDate = async(req, res) => {
     const userId = req.params.id
-    const filter = req.query.filter // month,week,year
+    const date = req.query.date // give month and year
     try {
         const user = await User.findOne({
             where: { id: userId },
@@ -158,13 +158,31 @@ exports.filterDate = async(req, res) => {
         })
         assertExistence(user)
 
-        let startDate = moment().startOf(filter);
+        const givenDate = moment(date)
+        if(moment().isAfter(momentDate)){
+            throw new {
+                error: new Error(),
+                status: 403,
+                name: 'UnprocessableEntity',
+                msg: 'choose any past date'
+            }
+        }
+
+        let startDate = moment().startOf('month');
+        let endDate;
+        let currentMonth = moment().get('month')
+        if(givenDate.get('month').toString() === currentMonth.toString()){
+            endDate = moment().subtract('1', 'day')
+        }
+
+        endDate = givenDate.endOf('month')
 
         const monthRecord = await Attendance.findAll({
             where: {
                 riderId: userId,
                 createdAt: {
-                    [Op.gt]: startDate
+                    [Op.gt]: startDate,
+                    [Op.lt]: endDate
                 }
             },
             include: [ {
