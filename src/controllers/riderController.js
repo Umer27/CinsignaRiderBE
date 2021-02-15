@@ -146,11 +146,11 @@ exports.todayRecords = async(req, res) => {
 }
 
 exports.filterDate = async(req, res) => {
-    const userId = req.params.id
+    const userId = req.params.aliasId
     const date = req.query.date // give month and year
     try {
         const user = await User.findOne({
-            where: { id: userId },
+            where: { alias: userId },
             include: [ {
                 model: Shift,
                 as: 'shift'
@@ -159,8 +159,8 @@ exports.filterDate = async(req, res) => {
         assertExistence(user)
 
         const givenDate = moment(date)
-        if(moment().isAfter(momentDate)){
-            throw new {
+        if(givenDate.diff(moment()) >= 0){
+            throw {
                 error: new Error(),
                 status: 403,
                 name: 'UnprocessableEntity',
@@ -168,20 +168,22 @@ exports.filterDate = async(req, res) => {
             }
         }
 
-        let startDate = moment().startOf('month');
+        let startDate
         let endDate;
         let currentMonth = moment().get('month')
-        if(givenDate.get('month').toString() === currentMonth.toString()){
+        if(givenDate.get('month') === currentMonth){
+            startDate = moment().startOf('month');
             endDate = moment().subtract('1', 'day')
+        } else {
+            startDate = givenDate.startOf('month').toString()
+            endDate = givenDate.endOf('month').toString()
         }
-
-        endDate = givenDate.endOf('month')
 
         const monthRecord = await Attendance.findAll({
             where: {
-                riderId: userId,
+                riderId: user.id,
                 createdAt: {
-                    [Op.gt]: startDate,
+                    [Op.gte]: startDate,
                     [Op.lt]: endDate
                 }
             },
@@ -191,8 +193,8 @@ exports.filterDate = async(req, res) => {
             } ]
         })
         res.send(monthRecord)
-    } catch(e) {
-        console.log(e)
+    } catch(error) {
+        errorHandler(res, error);
     }
 }
 
