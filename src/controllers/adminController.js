@@ -68,7 +68,12 @@ exports.history = async(req, res) => {
             include: [ {
                 model: Record,
                 as: 'record'
-            } ]
+            },
+                {
+                    model: User,
+                    as: 'rider'
+                }
+            ]
         })
         res.send(todayRecords)
     } catch(e) {

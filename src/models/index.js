@@ -45,7 +45,8 @@ User.belongsTo(Shift, { as: 'shift' })
 Session.belongsTo(User)
 //attendance
 Attendance.belongsTo(User, {
-    foreignKey: 'riderId'
+    foreignKey: 'riderId',
+    as: 'rider'
 })
 Attendance.belongsTo(Shift)
 Attendance.hasMany(Record, { as: 'record' })
