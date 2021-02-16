@@ -40,6 +40,10 @@ const Record = RecordModel(sequelize, Sequelize);
 /*** Set Relationships ***/
 //User
 User.hasMany(Session)
+User.hasMany(Attendance, {
+    foreignKey: 'riderId',
+    as: 'attendance'
+})
 User.belongsTo(Shift, { as: 'shift' })
 //Session
 Session.belongsTo(User)
