@@ -47,8 +47,8 @@ exports.adminTodayRecords = async(req, res) => {
                 model: Record,
                 as: 'record'
             }, {
-                model: Shift,
-                as: 'shift'
+                model: User,
+                as: 'rider'
             } ]
         })
 
