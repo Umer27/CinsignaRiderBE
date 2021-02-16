@@ -207,7 +207,7 @@ exports.filterDate = async(req, res) => {
             }
             if(prevLength === records.length){
                 records.push({
-                    createdAt: day,
+                    createdAt: moment(day).toISOString(),
                     status: "Absent",
                 })
             }
