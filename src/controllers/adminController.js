@@ -1,10 +1,10 @@
 const _ = require('lodash');
-const { RECORD_STATUS } = require('../../config');
+const { RECORD_STATUS, USER_ROLES } = require('../../config');
 const { Record, User, sequelize, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
 } = require('../utils');
-const { Op } = require("sequelize");
+const { Op, QueryTypes } = require("sequelize");
 const moment = require('moment')
 
 /* Custom POST */
@@ -51,7 +51,32 @@ exports.adminTodayRecords = async(req, res) => {
                 as: 'shift'
             } ]
         })
-        res.send(todayRecords)
+
+        const riders = await User.findAll({
+            where: {
+                role: USER_ROLES.RIDER
+            },
+            attributes: [ 'id' ],
+            raw: true
+        })
+
+        const riderIdList = riders.map(rider => rider.id)
+
+
+        const absenteesCount = await Attendance.count({
+            where: {
+                [Op.and]: {
+                    riderId: {
+                        [Op.in]: riderIdList
+                    },
+                    createdAt: {
+                        [Op.gt]: TODAY_START,
+                        [Op.lt]: NOW
+                    }
+                }
+            },
+        })
+        res.send({ todayRecords, presentRider: todayRecords.length, absenteesCount, totalRiders: riders.length })
     } catch(e) {
         console.log(e)
     }
