@@ -150,11 +150,7 @@ exports.filterDate = async(req, res) => {
     const date = req.query.date // give month and year
     try {
         const user = await User.findOne({
-            where: { alias: userId },
-            include: [ {
-                model: Shift,
-                as: 'shift'
-            } ]
+            where: { alias: userId }
         })
         assertExistence(user)
 
@@ -190,11 +186,7 @@ exports.filterDate = async(req, res) => {
             include: [ {
                 model: Record,
                 as: 'record'
-            },
-                {
-                    model: User,
-                    as: 'rider'
-                } ]
+            } ]
         })
 
         let daysInMonth = [];
@@ -221,7 +213,7 @@ exports.filterDate = async(req, res) => {
             }
         }
 
-        res.send(records)
+        res.send({ records, rider: user })
     } catch(error) {
         errorHandler(res, error);
     }
