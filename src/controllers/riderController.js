@@ -190,7 +190,11 @@ exports.filterDate = async(req, res) => {
             include: [ {
                 model: Record,
                 as: 'record'
-            } ]
+            },
+                {
+                    model: User,
+                    as: 'rider'
+                }]
         })
         res.send(monthRecord)
     } catch(error) {
