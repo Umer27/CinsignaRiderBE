@@ -194,9 +194,34 @@ exports.filterDate = async(req, res) => {
                 {
                     model: User,
                     as: 'rider'
-                }]
+                } ]
         })
-        res.send(monthRecord)
+
+        let daysInMonth = [];
+
+        let monthDate = moment(startDate).startOf('month'); // change to a date in the month of interest
+
+        _.times(moment(startDate).daysInMonth(), function(n) {
+            daysInMonth.push(monthDate.format('YYYY-MM-DD'));  // your format
+            monthDate.add(1, 'day');
+        });
+        let records = []
+        for(const day of daysInMonth) {
+            const prevLength = records.length
+            for(const record of monthRecord) {
+                if(moment(record.createdAt.toString()).format('YYYY-MM-DD') === day){
+                    records.push(record)
+                }
+            }
+            if(prevLength === records.length){
+                records.push({
+                    createdAt: day,
+                    status: "Absent",
+                })
+            }
+        }
+
+        res.send(records)
     } catch(error) {
         errorHandler(res, error);
     }
