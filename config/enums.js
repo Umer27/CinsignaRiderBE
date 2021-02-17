@@ -16,6 +16,7 @@ exports.USER_STATUS = {
 
 exports.ATTENDANCE_STATUS = {
     ACTIVE: 'Active',
+    INACTIVE: 'Inactive',
     COMPLETED: 'Completed',
 }
 
