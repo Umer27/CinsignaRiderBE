@@ -59,8 +59,7 @@ exports.deleteSession = async(req, res) => {
         assertExistence(session);
 
         // Session Invalidate
-        await session.update({ isActive: false })
-
+        await session.destroy();
         res.send();
     } catch(error) {
         errorHandler(res, error);
