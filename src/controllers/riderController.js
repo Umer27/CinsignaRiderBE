@@ -195,7 +195,7 @@ exports.monthReport = async(req, res) => {
         })
         assertExistence(user)
 
-        let startDate = moment().startOf('month').add('1','d');
+        let startDate = moment().startOf('month').add('1', 'd');
         let endDate = moment().subtract('1', 'day')
 
         const monthRecord = await Attendance.findAll({
@@ -214,10 +214,10 @@ exports.monthReport = async(req, res) => {
 
         let daysInMonth = [];
 
-        let monthDate = moment(startDate).startOf('month').add('1','d'); // change to a date in the month of interest
+        let monthDate = moment(startDate).startOf('month') // change to a date in the month of interest
 
-        _.times(moment().get('date') -1, function(n) {
-            daysInMonth.push(monthDate.format('YYYY-MM-DD'));  // your format
+        _.times(moment().get('date') - 1, function(n) {
+            daysInMonth.push(monthDate.format('YYYY-MM-DD').toLocaleString());  // your format
             monthDate.add(1, 'day');
         });
         let report = []
@@ -230,7 +230,7 @@ exports.monthReport = async(req, res) => {
             }
             if(prevLength === report.length){
                 report.push({
-                    createdAt: moment(day).toISOString(),
+                    createdAt: moment(day).format('YYYY-MM-DDThh:mm:ss.msZ'),
                     status: "Absent",
                 })
             }
@@ -304,7 +304,7 @@ exports.filterDate = async(req, res) => {
             }
             if(prevLength === records.length){
                 records.push({
-                    createdAt: moment(day).toISOString(),
+                    createdAt: moment(day).format('YYYY-MM-DDThh:mm:ss.msZ'),
                     status: "Absent",
                 })
             }
