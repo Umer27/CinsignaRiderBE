@@ -12,7 +12,7 @@ module.exports = (sequelize, type) => {
         },
         status: {
             type: type.STRING,
-            defaultValue: 'ACTIVE'
+            defaultValue: USER_ROLES.ACTIVE
         },
         firstName: {
             type: type.STRING,
