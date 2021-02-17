@@ -17,6 +17,8 @@ const {
     getResponseQueryInfo
 } = require('../utils/helpers')
 const { nanoid } = require('nanoid')
+const { ENV_VARS } = require('../../config');
+const { SHIFT_ID } = ENV_VARS;
 
 
 exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
@@ -27,7 +29,7 @@ exports.postUser = async(req, res) => {
     const body = _.pick(req.body, USER_INPUT_FIELDS);
     try {
         if(body.role === USER_ROLES.RIDER){
-            body.shiftId = '43327598-2ad7-428a-aa8b-56ddea745fc9'
+            body.shiftId = SHIFT_ID
         }
         const instance = await User.create(body);
         let user = instance.toJSON()
