@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS } = require('../../config');
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS, USER_ROLES } = require('../../config');
 const { User, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
@@ -26,6 +26,9 @@ exports.getUsers = async(req, res) => getInstances(req, res, User, undefined, ex
 exports.postUser = async(req, res) => {
     const body = _.pick(req.body, USER_INPUT_FIELDS);
     try {
+        if(body.role === USER_ROLES.RIDER){
+            body.shiftId = '43327598-2ad7-428a-aa8b-56ddea745fc9'
+        }
         const instance = await User.create(body);
         let user = instance.toJSON()
         delete user.password
