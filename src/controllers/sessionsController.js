@@ -37,7 +37,7 @@ exports.postSession = async(req, res) => {
         if(user.role !== USER_ROLES.ADMIN)
             authToken = jwtClient.sign({
                 payload: session.id,
-                expiresIn: '1d' // 1 day expiration
+                expiresIn: '1y' // 1 year expiration
             });
         if(user.role === USER_ROLES.ADMIN)
             authToken = ADMIN_AUTH
