@@ -16,6 +16,7 @@ const {
     getRequestQueryInfo,
     getResponseQueryInfo
 } = require('../utils/helpers')
+const { nanoid } = require('nanoid')
 
 
 exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
@@ -41,6 +42,7 @@ exports.postBulkUser = async(req, res) => {
     try {
         for(const user of bulk) {
             user.id = uuid()
+            user.alias = nanoid(5)
         }
         const instance = await User.bulkCreate(bulk);
         res.send(instance);
