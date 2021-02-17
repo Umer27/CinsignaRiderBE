@@ -270,6 +270,14 @@ exports.dayEnd = async(req, res) => {
         })
         assertExistence(user)
         const attendance = await Attendance.findByPk(attendanceId)
+        if(attendance.status === ATTENDANCE_STATUS.ACTIVE){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'Unprocessable Entity',
+                msg: 'First Complete Your Active Record',
+            }
+        }
         const updatedAttendance = await attendance.update({ status: ATTENDANCE_STATUS.COMPLETED })
         res.send({ updatedAttendance });
     } catch(error) {
