@@ -1,7 +1,7 @@
 const _ = require('lodash');
 const uuid = require('uuid/v4');
 const bcrypt = require('bcrypt');
-const { USER_ROLES, USER_PRIVATE_FIELDS } = require('../../config');
+const { USER_STATUS,USER_ROLES, USER_PRIVATE_FIELDS } = require('../../config');
 const { nanoid } = require('nanoid')
 
 module.exports = (sequelize, type) => {
@@ -12,7 +12,7 @@ module.exports = (sequelize, type) => {
         },
         status: {
             type: type.STRING,
-            defaultValue: USER_ROLES.ACTIVE
+            defaultValue: USER_STATUS.ACTIVE
         },
         firstName: {
             type: type.STRING,
