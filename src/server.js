@@ -49,6 +49,7 @@ app.post('/rider/online', generalAuth, riderController.riderOnline)
 app.post('/rider/offline', generalAuth, riderController.riderOffline)
 app.get('/rider/dayEnd/:attendanceId', generalAuth, riderController.dayEnd)
 app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
+app.get('/rider/monthReport/', generalAuth, riderController.monthReport)
 
 /*Admin*/
 // specific rider detail
