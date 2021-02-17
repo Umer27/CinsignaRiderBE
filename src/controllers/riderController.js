@@ -263,13 +263,16 @@ exports.filterDate = async(req, res) => {
 
         let startDate
         let endDate;
+        let totalDays;
         let currentMonth = moment().get('month')
         if(givenDate.get('month') === currentMonth){
             startDate = moment().startOf('month');
             endDate = moment().subtract('1', 'day')
+            totalDays = moment().get('date') - 1
         } else {
             startDate = givenDate.startOf('month').toString()
             endDate = givenDate.endOf('month').toString()
+            totalDays = moment(startDate).daysInMonth()
         }
 
         const monthRecord = await Attendance.findAll({
@@ -290,7 +293,7 @@ exports.filterDate = async(req, res) => {
 
         let monthDate = moment(startDate).startOf('month'); // change to a date in the month of interest
 
-        _.times(moment().get('date') - 1, function(n) {
+        _.times(totalDays, function(n) {
             daysInMonth.push(monthDate.format('YYYY-MM-DD'));  // your format
             monthDate.add(1, 'day');
         });
