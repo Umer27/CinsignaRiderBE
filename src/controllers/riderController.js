@@ -188,6 +188,60 @@ exports.todayRecords = async(req, res) => {
     }
 }
 
+exports.monthReport = async(req, res) => {
+    try {
+        const user = await User.findOne({
+            where: { id: req.userId }
+        })
+        assertExistence(user)
+
+        let startDate = moment().startOf('month').add('1','d');
+        let endDate = moment().subtract('1', 'day')
+
+        const monthRecord = await Attendance.findAll({
+            where: {
+                riderId: user.id,
+                createdAt: {
+                    [Op.gte]: startDate,
+                    [Op.lt]: endDate
+                }
+            },
+            include: [ {
+                model: Record,
+                as: 'record'
+            } ]
+        })
+
+        let daysInMonth = [];
+
+        let monthDate = moment(startDate).startOf('month').add('1','d'); // change to a date in the month of interest
+
+        _.times(moment().get('date') -1, function(n) {
+            daysInMonth.push(monthDate.format('YYYY-MM-DD'));  // your format
+            monthDate.add(1, 'day');
+        });
+        let report = []
+        for(const day of daysInMonth) {
+            const prevLength = report.length
+            for(const record of monthRecord) {
+                if(moment(record.createdAt.toString()).format('YYYY-MM-DD') === day){
+                    report.push(record)
+                }
+            }
+            if(prevLength === report.length){
+                report.push({
+                    createdAt: moment(day).toISOString(),
+                    status: "Absent",
+                })
+            }
+        }
+
+        res.send({ report })
+    } catch(error) {
+        errorHandler(res, error);
+    }
+}
+
 exports.filterDate = async(req, res) => {
     const userId = req.params.aliasId
     const date = req.query.date // give month and year
