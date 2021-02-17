@@ -23,14 +23,54 @@ exports.riderOnline = async(req, res) => {
         })
         assertExistence(user)
 
+        const TODAY_START = new Date().setHours(0, 0, 0, 0);
+        const NOW = new Date();
+
+        const completedAttendance = await Attendance.findOne({
+            where: {
+                riderId: req.userId,
+                createdAt: {
+                    [Op.gt]: TODAY_START,
+                    [Op.lt]: NOW
+                },
+                status: ATTENDANCE_STATUS.COMPLETED
+            }
+        })
+        if(!_.isEmpty(completedAttendance)){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'Unprocessable Entity',
+                msg: 'Your day has been ended Go Home',
+            }
+        }
+
+        const activeRecord = await Record.findOne({
+            where: {
+                riderId: req.userId,
+                createdAt: {
+                    [Op.gt]: TODAY_START,
+                    [Op.lt]: NOW
+                },
+                status: ATTENDANCE_STATUS.ACTIVE
+            },
+        })
+
+        if(!_.isEmpty(activeRecord)){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'Unprocessable Entity',
+                msg: 'Already online record exist',
+            }
+        }
         const now = new moment().format("HH:mm:ss")
         const expected = user.shift.start
         const ms = moment(now, "HH:mm").diff(moment(expected, "HH:mm"));
         const isLate = ms <= 0
 
         // check for any record in that day
-        const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = new Date();
+
         const checkRecord = await Record.findOne({
             where: {
                 riderId: req.userId,
@@ -97,7 +137,7 @@ exports.riderOffline = async(req, res) => {
         let recordedTime = moment(recordEnd, "HH:mm:ss").subtract(moment(recordStart, "HH:mm:ss")).subtract(5, 'hours').format("HH:mm:ss");
         const attendance = await Attendance.findByPk(record.attendanceId)
         const dayTotalTime = moment(attendance.dayTotalTime, "HH:mm:ss").add(moment(recordedTime, "HH:mm:ss")).subtract(19, 'hours').format("HH:mm:ss");
-        await attendance.update({ dayTotalTime, status: ATTENDANCE_STATUS.COMPLETED })
+        await attendance.update({ dayTotalTime, status: ATTENDANCE_STATUS.INACTIVE })
         const updatedRecord = await record.update({
             endLocation,
             endLocationAddress: coder[0].formattedAddress,
@@ -214,6 +254,21 @@ exports.filterDate = async(req, res) => {
         }
 
         res.send({ records, rider: user })
+    } catch(error) {
+        errorHandler(res, error);
+    }
+}
+
+exports.dayEnd = async(req, res) => {
+    const attendanceId = req.params.attendanceId
+    try {
+        const user = await User.findOne({
+            where: { id: req.userId },
+        })
+        assertExistence(user)
+        const attendance = await Attendance.findByPk(attendanceId)
+        const updatedAttendance = await attendance.update({ status: ATTENDANCE_STATUS.COMPLETED })
+        res.send({ updatedAttendance });
     } catch(error) {
         errorHandler(res, error);
     }

@@ -47,6 +47,7 @@ app.delete("/shift/:id", generalAuth, shiftController.deleteShift);
 /* rider*/
 app.post('/rider/online', generalAuth, riderController.riderOnline)
 app.post('/rider/offline', generalAuth, riderController.riderOffline)
+app.get('/rider/dayEnd/:attendanceId', generalAuth, riderController.dayEnd)
 app.get('/rider/todayRecords', generalAuth, riderController.todayRecords)
 
 /*Admin*/
