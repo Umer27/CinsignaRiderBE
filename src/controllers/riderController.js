@@ -290,7 +290,7 @@ exports.filterDate = async(req, res) => {
 
         let monthDate = moment(startDate).startOf('month'); // change to a date in the month of interest
 
-        _.times(moment(startDate).daysInMonth(), function(n) {
+        _.times(moment().get('date') - 1, function(n) {
             daysInMonth.push(monthDate.format('YYYY-MM-DD'));  // your format
             monthDate.add(1, 'day');
         });
