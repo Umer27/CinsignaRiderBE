@@ -102,14 +102,17 @@ exports.riderOnline = async(req, res) => {
             lat: startLocation.split(',')[0],
             lon: startLocation.split(',')[1]
         })
+        const attendanceId = attendance ? attendance.dataValues.id : checkRecord.attendanceId
+
         const record = await Record.create({
             startLocation,
             startLocationAddress: coder[0].formattedAddress,
             riderId: req.userId,
-            attendanceId: attendance ? attendance.dataValues.id : checkRecord.attendanceId
+            attendanceId
         })
-
-        res.send({ attendance: attendance ? attendance : checkRecord.attendance, record });
+        const activeAttendance = await Attendance.findByPk(attendanceId)
+        await activeAttendance.update({ status: ATTENDANCE_STATUS.ACTIVE })
+        res.send({ attendance: activeAttendance, record });
     } catch(error) {
         errorHandler(res, error);
     }
