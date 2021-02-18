@@ -55,7 +55,8 @@ exports.adminTodayRecords = async(req, res) => {
         const riders = await User.count({
             where: {
                 role: USER_ROLES.RIDER
-            }
+            },
+            raw: true
         })
 
         res.send({
