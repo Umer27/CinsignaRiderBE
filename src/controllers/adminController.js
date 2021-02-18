@@ -52,31 +52,18 @@ exports.adminTodayRecords = async(req, res) => {
             } ]
         })
 
-        const riders = await User.findAll({
+        const riders = await User.count({
             where: {
                 role: USER_ROLES.RIDER
-            },
-            attributes: [ 'id' ],
-            raw: true
+            }
         })
 
-        const riderIdList = riders.map(rider => rider.id)
-
-
-        const absenteesCount = await Attendance.count({
-            where: {
-                [Op.and]: {
-                    riderId: {
-                        [Op.in]: riderIdList
-                    },
-                    createdAt: {
-                        [Op.gt]: TODAY_START,
-                        [Op.lt]: NOW
-                    }
-                }
-            },
+        res.send({
+            todayRecords,
+            presentRider: todayRecords.length,
+            absenteesCount: riders - todayRecords.length,
+            totalRiders: riders.length
         })
-        res.send({ todayRecords, presentRider: todayRecords.length, absenteesCount, totalRiders: riders.length })
     } catch(e) {
         console.log(e)
     }
