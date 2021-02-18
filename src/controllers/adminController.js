@@ -63,7 +63,7 @@ exports.adminTodayRecords = async(req, res) => {
             todayRecords,
             presentRider: todayRecords.length,
             absenteesCount: riders - todayRecords.length,
-            totalRiders: riders.length
+            totalRiders: riders
         })
     } catch(e) {
         console.log(e)
