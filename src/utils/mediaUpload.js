@@ -4,10 +4,12 @@ const multerS3 = require('multer-s3');
 const { v4 } = require('uuid');
 const { ENV_VARS } = require('../../config');
 
+console.log()
+
 AWS.config.update({
-    accessKeyId: 'AKIA5TW2Y7HIMRXOMHJW',
-    secretAccessKey: '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',
-    region: 'ap-south-1'
+    accessKeyId: process.env.AWS_ACCESS_KEY,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_S3_REGION
 });
 
 const S3 = new AWS.S3();
@@ -30,7 +32,7 @@ const handleUploadMiddleware = multer({
     fileFilter,
     storage: multerS3({
         s3: S3,
-        bucket: 'consigna-riders',
+        bucket: process.env.AWS_BUCKET_NAME,
         acl: 'public-read',
         contentType: multerS3.AUTO_CONTENT_TYPE,
         key: function(req, file, cb) {

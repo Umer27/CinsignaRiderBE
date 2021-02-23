@@ -147,13 +147,22 @@ exports.searchUser = async(req, res) => {
         console.log(e)
     }
 }
-exports.uploadImage = async(req, res) => {
+exports.uploadUserImage = async(req, res) => {
     try {
         const imageUrl = req.file.newName
         const user = await User.findOne({ where: { id: req.userId } })
         assertExistence(user)
         const updatedUser = await user.update({ imageUrl })
         res.send(updatedUser)
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+exports.uploadImage = async(req, res) => {
+    try {
+        const imageUrl = req.file.newName
+        res.send(imageUrl)
     } catch(e) {
         console.log(e)
     }

@@ -35,7 +35,8 @@ app.post("/users/bulk", adminAuth, usersController.postBulkUser);
 app.patch("/users/:id", generalAuth, usersController.patchUser);
 app.delete("/users/:id", adminAuth, usersController.deleteUser);
 
-app.post("/image", generalAuth, handleUploadMiddleware.single('input_files'), usersController.uploadImage)
+app.post("/user/image", generalAuth, handleUploadMiddleware.single('input_files'), usersController.uploadUserImage)
+app.post("/image", adminAuth,handleUploadMiddleware.single('input_files'), usersController.uploadImage)
 
 /* Sessions */
 app.get("/sessions/:id", generalAuth, sessionsController.getSession);
