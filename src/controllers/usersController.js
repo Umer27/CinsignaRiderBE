@@ -162,7 +162,7 @@ exports.uploadUserImage = async(req, res) => {
 exports.uploadImage = async(req, res) => {
     try {
         const imageUrl = req.file.newName
-        res.send(imageUrl)
+        res.send({ imageUrl })
     } catch(e) {
         console.log(e)
     }
