@@ -3,6 +3,8 @@ const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser");
 const { ENV_VARS } = require("../config");
+const morgan = require('morgan');
+const { handleUploadMiddleware } = require('../src/utils')
 const { PORT, APP_NAME } = ENV_VARS;
 const SERVER_PORT = PORT || 4000;
 
@@ -19,6 +21,7 @@ const corsOptions = {
     exposedHeaders: "Auth",
 };
 
+app.use(morgan('combined'));
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,6 +34,8 @@ app.post("/users", adminAuth, usersController.postUser);
 app.post("/users/bulk", adminAuth, usersController.postBulkUser);
 app.patch("/users/:id", generalAuth, usersController.patchUser);
 app.delete("/users/:id", adminAuth, usersController.deleteUser);
+
+app.post("/image", generalAuth, handleUploadMiddleware.single('input_files'), usersController.uploadImage)
 
 /* Sessions */
 app.get("/sessions/:id", generalAuth, sessionsController.getSession);
