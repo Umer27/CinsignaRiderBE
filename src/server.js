@@ -21,8 +21,21 @@ const corsOptions = {
     exposedHeaders: "Auth",
 };
 
+app.use((req,res,next) =>{
+    res.header("Access-Control-Allow-Origin","*");
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With", "Content-Type", "Accept", "Authorization"
+    );
+    if (req.method === 'OPTIONS'){
+        //FOLLOWING HEADER CONTAIN ALL THE HTTP VERBES YOU WANT TO ALLOW WITH YOUR API
+        res.header('Access-Control-Allow-Methods', 'PUT,POST,PATCH,DELETE,GET');
+        return res.status(200).json();
+    }
+    next();
+});
 app.use(morgan('combined'));
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
