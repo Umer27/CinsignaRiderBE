@@ -44,6 +44,7 @@ exports.SHIFT_INPUT_FIELDS = [
 exports.ONLINE_INPUT = [
     'isOnline',
     'currentLocation',
+    'zone'
 ]
 
 exports.OFFLINE_INPUT = [

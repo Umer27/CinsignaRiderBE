@@ -12,7 +12,7 @@ const { Op } = require("sequelize");
 /* Custom POST */
 exports.riderOnline = async(req, res) => {
     const body = _.pick(req.body, ONLINE_INPUT);
-    const timeZone = 5
+    const timeZone = body.zone
     try {
         //User Exist
         const user = await User.findOne({
