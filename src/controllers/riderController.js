@@ -12,6 +12,7 @@ const { Op } = require("sequelize");
 /* Custom POST */
 exports.riderOnline = async(req, res) => {
     const body = _.pick(req.body, ONLINE_INPUT);
+    const timeZone = 5
     try {
         //User Exist
         const user = await User.findOne({
@@ -23,15 +24,31 @@ exports.riderOnline = async(req, res) => {
         })
         assertExistence(user)
 
-        const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = new Date();
+        // cases:
+        // riders who online before 12
+        // riders who online after 12
+
+        // check the current time
+        // if after 12 then day start time is day - 1 6
+        // if before 12 then day start time is day=> 6
+
+        const currentHour = moment().utc().get('h')
+        let DAY_START
+        let DAY_END
+        if(currentHour < 6){
+            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
+        } else {
+            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+        }
 
         const completedAttendance = await Attendance.findOne({
             where: {
                 riderId: req.userId,
                 createdAt: {
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
                 },
                 status: ATTENDANCE_STATUS.COMPLETED
             }
@@ -49,8 +66,8 @@ exports.riderOnline = async(req, res) => {
             where: {
                 riderId: req.userId,
                 createdAt: {
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
                 },
                 status: ATTENDANCE_STATUS.ACTIVE
             },
@@ -67,7 +84,7 @@ exports.riderOnline = async(req, res) => {
         const now = new moment().format("HH:mm:ss")
         const expected = user.shift.start
         const ms = moment(now, "HH:mm").diff(moment(expected, "HH:mm"));
-        const isLate = ms <= 0
+        const isLate = ms >= 0
 
         // check for any record in that day
 
@@ -75,8 +92,8 @@ exports.riderOnline = async(req, res) => {
             where: {
                 riderId: req.userId,
                 createdAt: {
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
                 }
             },
             include: [ {
@@ -130,6 +147,14 @@ exports.riderOffline = async(req, res) => {
             where: { id: recordId }
         })
         assertExistence(record)
+        if(record.status === RECORD_STATUS.COMPLETED){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'Unprocessable Entity',
+                msg: 'Record Already Completed',
+            }
+        }
         const endLocation = body.currentLocation
         const coder = await geocoder.reverse({
             lat: endLocation.split(',')[0],

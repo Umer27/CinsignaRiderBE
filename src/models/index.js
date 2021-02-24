@@ -12,6 +12,7 @@ const Sequelize = require('sequelize');
 const sequelize = new Sequelize(DATABASE_URL, {
         logging: false,
         dialect: 'postgresql',
+        timezone: 'utc',
         pool: {
             max: 5,
             min: 0,
@@ -25,7 +26,7 @@ const sequelize = new Sequelize(DATABASE_URL, {
             //     rejectUnauthorized: false
             // }
             //local db
-            ssl: false
+            ssl: false,
         }
     }
 );
