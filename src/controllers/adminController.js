@@ -34,7 +34,7 @@ exports.liveRiders = async(req, res) => {
 
 exports.adminTodayRecords = async(req, res) => {
     try {
-        const timeZone = 5
+        const timeZone = parseInt(req.query.zone)
 
         const currentHour = moment().utc().get('h')
         let DAY_START
@@ -87,7 +87,7 @@ exports.history = async(req, res) => {
         const todayRecords = await Attendance.findAll({
             where: {
                 createdAt: {
-                    [Op.gte]: moment().subtract('2', 'day').toDate().setHours(0, 0, 0, 0)
+                    [Op.gte]: moment().subtract('1', 'day').toDate().setHours(0, 0, 0, 0)
                 }
             },
             include: [ {

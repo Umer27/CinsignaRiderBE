@@ -176,7 +176,7 @@ exports.riderOffline = async(req, res) => {
 
 exports.todayRecords = async(req, res) => {
     try {
-        const timeZone = 5
+        const timeZone = req.query.zone
         const user = await User.findOne({
             where: { id: req.userId },
             include: [ {
