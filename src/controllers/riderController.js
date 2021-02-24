@@ -297,7 +297,7 @@ exports.filterDate = async(req, res) => {
         let currentMonth = moment().get('month')
         if(givenDate.get('month') === currentMonth){
             startDate = moment().startOf('month');
-            endDate = moment().subtract('1', 'day')
+            endDate = moment().subtract('1', 'day').toDate().setHours(23,59,59,59)
             totalDays = moment().get('date') - 1
         } else {
             startDate = givenDate.startOf('month').toString()
@@ -310,7 +310,7 @@ exports.filterDate = async(req, res) => {
                 riderId: user.id,
                 createdAt: {
                     [Op.gte]: startDate,
-                    [Op.lt]: endDate
+                    [Op.lte]: endDate
                 }
             },
             include: [ {
