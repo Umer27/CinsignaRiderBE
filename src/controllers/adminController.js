@@ -36,7 +36,7 @@ exports.adminTodayRecords = async(req, res) => {
     try {
         const timeZone = parseInt(req.query.zone)
 
-        const currentHour = moment().utc().get('h')
+        const currentHour = moment().get('h')
         let DAY_START
         let DAY_END
         if(currentHour < 6){

@@ -24,7 +24,7 @@ exports.riderOnline = async(req, res) => {
         })
         assertExistence(user)
 
-        const currentHour = moment().utc().get('h')
+        const currentHour = moment().get('h')
         let DAY_START
         let DAY_END
         if(currentHour < 6){
@@ -185,7 +185,7 @@ exports.todayRecords = async(req, res) => {
             } ]
         })
         assertExistence(user)
-        const currentHour = moment().utc().get('h')
+        const currentHour = moment().get('h')
         let DAY_START
         let DAY_END
         if(currentHour < 6){
