@@ -34,13 +34,24 @@ exports.liveRiders = async(req, res) => {
 
 exports.adminTodayRecords = async(req, res) => {
     try {
-        const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = new Date();
+        const timeZone = 5
+
+        const currentHour = moment().utc().get('h')
+        let DAY_START
+        let DAY_END
+        if(currentHour < 6){
+            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
+        } else {
+            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+        }
+
         const todayRecords = await Attendance.findAll({
             where: {
                 createdAt: {
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
                 }
             },
             include: [ {
