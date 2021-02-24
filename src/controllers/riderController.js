@@ -24,14 +24,6 @@ exports.riderOnline = async(req, res) => {
         })
         assertExistence(user)
 
-        // cases:
-        // riders who online before 12
-        // riders who online after 12
-
-        // check the current time
-        // if after 12 then day start time is day - 1 6
-        // if before 12 then day start time is day=> 6
-
         const currentHour = moment().utc().get('h')
         let DAY_START
         let DAY_END
@@ -162,9 +154,12 @@ exports.riderOffline = async(req, res) => {
         })
         const recordEnd = new moment().format("HH:mm:ss")
         const recordStart = moment(record.createdAt).format("HH:mm:ss")
-        let recordedTime = moment(recordEnd, "HH:mm:ss").subtract(moment(recordStart, "HH:mm:ss")).subtract(5, 'hours').format("HH:mm:ss");
+        let recordedTime = moment(recordEnd, "HH:mm:ss").subtract(moment(recordStart, "HH:mm:ss")).utc().format("HH:mm:ss");
+        const hours = parseInt(recordedTime.split(':')[0])
+        const minutes = parseInt(recordedTime.split(':')[1])
+        const seconds = parseInt(recordedTime.split(':')[2])
         const attendance = await Attendance.findByPk(record.attendanceId)
-        const dayTotalTime = moment(attendance.dayTotalTime, "HH:mm:ss").add(moment(recordedTime, "HH:mm:ss")).subtract(19, 'hours').format("HH:mm:ss");
+        const dayTotalTime = moment(attendance.dayTotalTime, "HH:mm:ss").add(hours, 'h').add(minutes, 'm').add(seconds, "s").format("HH:mm:ss");
         await attendance.update({ dayTotalTime, status: ATTENDANCE_STATUS.INACTIVE })
         const updatedRecord = await record.update({
             endLocation,
@@ -181,6 +176,7 @@ exports.riderOffline = async(req, res) => {
 
 exports.todayRecords = async(req, res) => {
     try {
+        const timeZone = 5
         const user = await User.findOne({
             where: { id: req.userId },
             include: [ {
@@ -189,14 +185,22 @@ exports.todayRecords = async(req, res) => {
             } ]
         })
         assertExistence(user)
-        const TODAY_START = new Date().setHours(0, 0, 0, 0);
-        const NOW = new Date();
+        let DAY_START
+        let DAY_END
+        if(currentHour < 6){
+            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
+        } else {
+            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+        }
+
         const todayRecords = await Attendance.findOne({
             where: {
                 riderId: req.userId,
                 createdAt: {
-                    [Op.gt]: TODAY_START,
-                    [Op.lt]: NOW
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
                 }
             },
             include: [ {

@@ -83,10 +83,11 @@ exports.adminTodayRecords = async(req, res) => {
 
 exports.history = async(req, res) => {
     try {
+
         const todayRecords = await Attendance.findAll({
             where: {
                 createdAt: {
-                    [Op.gte]: moment().subtract('1', 'day').toDate().setHours(0, 0, 0, 0)
+                    [Op.gte]: moment().subtract('2', 'day').toDate().setHours(0, 0, 0, 0)
                 }
             },
             include: [ {
