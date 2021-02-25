@@ -32,7 +32,8 @@ exports.UPDATE_USER_INPUT_FIELDS = [
     'city',
     'addressOrZip',
     'currentLocation',
-    "shiftId"
+    "shiftId",
+    "status"
 ];
 
 exports.SHIFT_INPUT_FIELDS = [
