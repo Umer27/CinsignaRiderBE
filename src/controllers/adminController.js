@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { RECORD_STATUS, USER_ROLES } = require('../../config');
+const { RECORD_STATUS, USER_ROLES, ATTENDANCE_STATUS } = require('../../config');
 const { Record, User, sequelize, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
@@ -10,14 +10,28 @@ const moment = require('moment')
 /* Custom POST */
 exports.liveRiders = async(req, res) => {
     try {
-        const record = await Record.findAll({
+        const timeZone = parseInt(req.query.zone)
+
+        const currentHour = moment().get('h')
+        let DAY_START
+        let DAY_END
+        if(currentHour < 6){
+            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
+        } else {
+            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+        }
+
+        const attendances = await Attendance.findAll({
             where: {
-                [Op.and]: [ {
-                    status: RECORD_STATUS.ACTIVE,
-                }, sequelize.where(
-                    sequelize.fn('DATE', sequelize.col('record.createdAt')),
-                    sequelize.literal('CURRENT_DATE')
-                ) ]
+                status: {
+                    [Op.in]: [ ATTENDANCE_STATUS.ACTIVE, ATTENDANCE_STATUS.INACTIVE ]
+                },
+                createdAt: {
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
+                }
             },
             include: [
                 {
@@ -26,7 +40,8 @@ exports.liveRiders = async(req, res) => {
                 }
             ],
         })
-        res.json(record);
+
+        res.json(attendances);
     } catch(error) {
         errorHandler(res, error);
     }
