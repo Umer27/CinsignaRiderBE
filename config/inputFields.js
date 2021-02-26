@@ -17,7 +17,8 @@ exports.USER_INPUT_FIELDS = [
     'state',
     'city',
     'addressOrZip',
-    "shiftId"
+    "shiftId",
+    "alias"
 ];
 exports.UPDATE_USER_INPUT_FIELDS = [
     'firstName',
