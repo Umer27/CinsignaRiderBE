@@ -226,14 +226,14 @@ exports.monthReport = async(req, res) => {
         assertExistence(user)
 
         let startDate = moment().startOf('month').add('1', 'd');
-        let endDate = moment().subtract('1', 'day')
+        let endDate = moment().subtract('1', 'day').toDate().setHours(23,59,59,59)
 
         const monthRecord = await Attendance.findAll({
             where: {
                 riderId: user.id,
                 createdAt: {
                     [Op.gte]: startDate,
-                    [Op.lt]: endDate
+                    [Op.lte]: endDate
                 }
             },
             include: [ {
