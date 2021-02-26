@@ -91,18 +91,14 @@ exports.adminTodayRecords = async(req, res) => {
             absenteesCount: riders - todayRecords.length,
             totalRiders: riders
         })
-    } catch(e) {
-        console.log(e)
+    } catch(error) {
+        errorHandler(res, error);
     }
 }
 
 exports.history = async(req, res) => {
     try {
         const timeZone = parseInt(req.query.zone)
-
-        // history will show day - 1
-        // can show any day attendances
-
         const currentHour = moment().get('h')
         let DAY_START
         let DAY_END
@@ -113,7 +109,6 @@ exports.history = async(req, res) => {
             DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
             DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 59)).utc(true).toDate()
         }
-
         const todayRecords = await Attendance.findAll({
             where: {
                 createdAt: {
@@ -134,6 +129,47 @@ exports.history = async(req, res) => {
         res.send(todayRecords)
     } catch(e) {
         console.log(e)
+    }
+}
+
+exports.historyAttendanceFilter = async(req, res) => {
+    try {
+        const date = req.query.date
+        const timeZone = req.query.zone
+        const givenDate = moment(date)
+        if(givenDate.diff(moment()) >= 0){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'UnprocessableEntity',
+                msg: 'choose any past date'
+            }
+        }
+
+        let DAY_START = moment(givenDate.toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
+        let DAY_END = moment(givenDate.add(1,'d').toDate().setHours(5 - timeZone, 59, 59, 59)).utc(true).toDate()
+
+        const givenDayAttendances = await Attendance.findAll({
+            where: {
+                createdAt: {
+                    [Op.gt]: DAY_START,
+                    [Op.lt]: DAY_END
+                }
+            },
+            include: [ {
+                model: Record,
+                as: 'record'
+            },
+                {
+                    model: User,
+                    as: 'rider'
+                }
+            ]
+        })
+        res.send(givenDayAttendances)
+
+    } catch(error) {
+        errorHandler(res, error);
     }
 }
 
