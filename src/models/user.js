@@ -30,7 +30,8 @@ module.exports = (sequelize, type) => {
         },
         alias: {
             type: type.STRING,
-            defaultValue: nanoid(10)
+            defaultValue: nanoid(10),
+            unique: true
         },
         phoneNumber: {
             type: type.STRING,
