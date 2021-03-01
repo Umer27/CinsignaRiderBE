@@ -1,6 +1,6 @@
 const uuid = require('uuid/v4');
 const _ = require('lodash');
-const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS, USER_ROLES } = require('../../config');
+const { USER_INPUT_FIELDS, UPDATE_USER_INPUT_FIELDS, USER_PRIVATE_FIELDS, BULK_USERS, USER_ROLES, USER_STATUS } = require('../../config');
 const { User, Attendance, Shift } = require('../models/');
 const {
     errorHandler,
@@ -85,6 +85,15 @@ exports.patchUser = async(req, res) => {
                 lon: startLocation.split(',')[1]
             })
             body.currentLocationAddress = coder[0].formattedAddress
+        }
+
+        if(body.status && body.status === USER_STATUS.SUSPENDED && user.role === USER_ROLES.ADMIN){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'UnprocessableEntity',
+                msg: 'Cannot suspend admin'
+            }
         }
 
         // Apply the updates

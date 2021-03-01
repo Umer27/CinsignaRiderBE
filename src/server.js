@@ -66,7 +66,8 @@ app.get('/admin/todayRecords', generalAuth, adminController.adminTodayRecords)
 app.get('/admin/search/', adminAuth, usersController.searchUser)
 app.get('/admin/location/riders', adminAuth, adminController.liveRiders)
 app.get('/admin/filter/rider/:aliasId', adminAuth, riderController.filterDate)
-app.get('/admin/history', adminAuth, adminController.history)
+app.get('/admin/history', adminAuth, adminController.history) // not using in fe
+app.get('/admin/filter/history', adminAuth, adminController.historyAttendanceFilter)
 
 /**
  *  Run the server

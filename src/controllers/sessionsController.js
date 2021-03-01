@@ -1,5 +1,5 @@
 const _ = require('lodash');
-const { SESSION_INPUT_FIELDS, SESSION_PRIVATE_FIELDS } = require('../../config');
+const { SESSION_INPUT_FIELDS, SESSION_PRIVATE_FIELDS, USER_STATUS } = require('../../config');
 const { User, Session } = require('../models/');
 const {
     jwtClient,
@@ -21,6 +21,14 @@ exports.postSession = async(req, res) => {
     try {
         let user = await User.findOne({ where: { phoneNumber, mac } });
         assertExistence(user)
+        if(user.status === USER_STATUS.SUSPENDED){
+            throw {
+                error: new Error(),
+                status: 403,
+                name: 'UnprocessableEntity',
+                msg: 'You are Suspended'
+            }
+        }
         let session = await Session.create(body);
         assertExistence(session);
         let coder

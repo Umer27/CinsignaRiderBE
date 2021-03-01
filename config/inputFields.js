@@ -17,7 +17,8 @@ exports.USER_INPUT_FIELDS = [
     'state',
     'city',
     'addressOrZip',
-    "shiftId"
+    "shiftId",
+    "alias"
 ];
 exports.UPDATE_USER_INPUT_FIELDS = [
     'firstName',
@@ -32,7 +33,8 @@ exports.UPDATE_USER_INPUT_FIELDS = [
     'city',
     'addressOrZip',
     'currentLocation',
-    "shiftId"
+    "shiftId",
+    "status"
 ];
 
 exports.SHIFT_INPUT_FIELDS = [
@@ -44,6 +46,7 @@ exports.SHIFT_INPUT_FIELDS = [
 exports.ONLINE_INPUT = [
     'isOnline',
     'currentLocation',
+    'zone'
 ]
 
 exports.OFFLINE_INPUT = [
