@@ -211,7 +211,7 @@ exports.todayRecords = async(req, res) => {
                 model: Shift,
                 as: 'shift'
             } ],
-            order: [['createdAt', 'ASC']]
+            order: [['record.createdAt', 'ASC']]
         })
         res.send(todayRecords)
     } catch(e) {
