@@ -210,7 +210,8 @@ exports.todayRecords = async(req, res) => {
             }, {
                 model: Shift,
                 as: 'shift'
-            } ]
+            } ],
+            order: '"createdAt" ASC'
         })
         res.send(todayRecords)
     } catch(e) {
@@ -226,7 +227,7 @@ exports.monthReport = async(req, res) => {
         assertExistence(user)
 
         let startDate = moment().startOf('month').add('1', 'd');
-        let endDate = moment().subtract('1', 'day').toDate().setHours(23,59,59,59)
+        let endDate = moment().subtract('1', 'day').toDate().setHours(23, 59, 59, 59)
 
         const monthRecord = await Attendance.findAll({
             where: {
@@ -297,7 +298,7 @@ exports.filterDate = async(req, res) => {
         let currentMonth = moment().get('month')
         if(givenDate.get('month') === currentMonth){
             startDate = moment().startOf('month');
-            endDate = moment().subtract('1', 'day').toDate().setHours(23,59,59,59)
+            endDate = moment().subtract('1', 'day').toDate().setHours(23, 59, 59, 59)
             totalDays = moment().get('date') - 1
         } else {
             startDate = givenDate.startOf('month').toString()
