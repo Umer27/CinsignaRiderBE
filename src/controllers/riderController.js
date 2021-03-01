@@ -206,12 +206,13 @@ exports.todayRecords = async(req, res) => {
             },
             include: [ {
                 model: Record,
-                as: 'record'
+                as: 'record',
+                order: [['createdAt', 'ASC']]
+
             }, {
                 model: Shift,
                 as: 'shift'
             } ],
-            order: [['record.createdAt', 'ASC']]
         })
         res.send(todayRecords)
     } catch(e) {
