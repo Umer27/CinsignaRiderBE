@@ -28,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 /* Users */
+app.get("/status", usersController.lbHealthCheck);
 app.get("/users", generalAuth, usersController.getUsers);
 app.get("/users/:id", generalAuth, usersController.getUser);
 app.post("/users", adminAuth, usersController.postUser);
