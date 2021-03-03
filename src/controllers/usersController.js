@@ -20,6 +20,14 @@ const { nanoid } = require('nanoid')
 const { ENV_VARS } = require('../../config');
 const { SHIFT_ID } = ENV_VARS;
 
+exports.lbHealthCheck = async(req, res) => {
+    try {
+        res.send();
+    } catch(error) {
+        errorHandler(res, error);
+    }
+
+}
 
 exports.getUser = async(req, res) => getInstance(req, res, User, [ { model: Shift, as: 'shift' } ], exclude);
 
