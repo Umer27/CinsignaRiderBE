@@ -51,7 +51,7 @@ exports.postSession = async(req, res) => {
             authToken = ADMIN_AUTH
         res.set({ 'Auth': authToken });
         session.role = user.role
-        res.json(session);
+        res.json({ session, user });
     } catch(error) {
         errorHandler(res, error);
     }
