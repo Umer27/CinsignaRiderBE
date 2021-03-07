@@ -107,15 +107,15 @@ exports.riderOnline = async(req, res) => {
             })
         }
         const startLocation = body.currentLocation
-        const coder = await geocoder.reverse({
-            lat: startLocation.split(',')[0],
-            lon: startLocation.split(',')[1]
-        })
+        // const coder = await geocoder.reverse({
+        //     lat: startLocation.split(',')[0],
+        //     lon: startLocation.split(',')[1]
+        // })
         const attendanceId = attendance ? attendance.dataValues.id : checkRecord.attendanceId
 
         const record = await Record.create({
             startLocation,
-            startLocationAddress: coder[0].formattedAddress,
+            startLocationAddress: '',
             riderId: req.userId,
             attendanceId
         })
@@ -148,10 +148,10 @@ exports.riderOffline = async(req, res) => {
             }
         }
         const endLocation = body.currentLocation
-        const coder = await geocoder.reverse({
-            lat: endLocation.split(',')[0],
-            lon: endLocation.split(',')[1]
-        })
+        // const coder = await geocoder.reverse({
+        //     lat: endLocation.split(',')[0],
+        //     lon: endLocation.split(',')[1]
+        // })
         const recordEnd = new moment().format("HH:mm:ss")
         const recordStart = moment(record.createdAt).format("HH:mm:ss")
         let recordedTime = moment(recordEnd, "HH:mm:ss").subtract(moment(recordStart, "HH:mm:ss")).utc().format("HH:mm:ss");
@@ -163,7 +163,7 @@ exports.riderOffline = async(req, res) => {
         await attendance.update({ dayTotalTime, status: ATTENDANCE_STATUS.INACTIVE })
         const updatedRecord = await record.update({
             endLocation,
-            endLocationAddress: coder[0].formattedAddress,
+            endLocationAddress: '',
             recordEnd,
             recordedTime,
             status: RECORD_STATUS.COMPLETED

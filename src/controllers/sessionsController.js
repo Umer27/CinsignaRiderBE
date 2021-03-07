@@ -31,14 +31,14 @@ exports.postSession = async(req, res) => {
         }
         let session = await Session.create(body);
         assertExistence(session);
-        let coder
-        if(body.currentLocation){
-            coder = await geocoder.reverse({
-                lat: currentLocation.split(',')[0],
-                lon: currentLocation.split(',')[1]
-            })
-        }
-        await user.update({ currentLocation, currentLocationAddress: coder[0].formattedAddress })
+        //let coder
+        // if(body.currentLocation){
+        //     coder = await geocoder.reverse({
+        //         lat: currentLocation.split(',')[0],
+        //         lon: currentLocation.split(',')[1]
+        //     })
+        // }
+        await user.update({ currentLocation, currentLocationAddress: '' })
         await session.setUser(user);
         session = session.toJSON();
         let authToken
