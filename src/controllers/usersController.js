@@ -88,11 +88,11 @@ exports.patchUser = async(req, res) => {
 
         if(body.currentLocation){
             const startLocation = body.currentLocation
-            const coder = await geocoder.reverse({
-                lat: startLocation.split(',')[0],
-                lon: startLocation.split(',')[1]
-            })
-            body.currentLocationAddress = coder[0].formattedAddress
+            // const coder = await geocoder.reverse({
+            //     lat: startLocation.split(',')[0],
+            //     lon: startLocation.split(',')[1]
+            // })
+            // body.currentLocationAddress = coder[0].formattedAddress
         }
 
         if(body.status && body.status === USER_STATUS.SUSPENDED && user.role === USER_ROLES.ADMIN){
