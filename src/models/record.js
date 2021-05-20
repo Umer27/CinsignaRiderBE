@@ -35,6 +35,10 @@ module.exports = (sequelize, type) => {
         recordEnd: {
             type: type.TIME,
             defaultValue: "00:00"
+        },
+        job: {
+            type: type.BOOLEAN,
+            defaultValue: false
         }
     }, {
         hooks: {

@@ -24,17 +24,8 @@ exports.riderOnline = async(req, res) => {
         })
         assertExistence(user)
 
-        const currentHour = moment().get('h')
-        let DAY_START
-        let DAY_END
-        if(currentHour < 6){
-            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
-        } else {
-            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-        }
-
+        const DAY_START = moment().startOf('day').utc(true).toDate()
+        const DAY_END = moment().endOf('day').utc(true).toDate()
         const completedAttendance = await Attendance.findOne({
             where: {
                 riderId: req.userId,
@@ -45,6 +36,7 @@ exports.riderOnline = async(req, res) => {
                 status: ATTENDANCE_STATUS.COMPLETED
             }
         })
+
         if(!_.isEmpty(completedAttendance)){
             throw {
                 error: new Error(),
@@ -64,7 +56,6 @@ exports.riderOnline = async(req, res) => {
                 status: ATTENDANCE_STATUS.ACTIVE
             },
         })
-
         if(!_.isEmpty(activeRecord)){
             throw {
                 error: new Error(),
@@ -79,7 +70,6 @@ exports.riderOnline = async(req, res) => {
         const isLate = ms >= 0
 
         // check for any record in that day
-
         const checkRecord = await Record.findOne({
             where: {
                 riderId: req.userId,
@@ -112,7 +102,6 @@ exports.riderOnline = async(req, res) => {
         //     lon: startLocation.split(',')[1]
         // })
         const attendanceId = attendance ? attendance.dataValues.id : checkRecord.attendanceId
-
         const record = await Record.create({
             startLocation,
             startLocationAddress: '',
@@ -185,16 +174,8 @@ exports.todayRecords = async(req, res) => {
             } ]
         })
         assertExistence(user)
-        const currentHour = moment().get('h')
-        let DAY_START
-        let DAY_END
-        if(currentHour < 6){
-            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
-        } else {
-            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-        }
+        const DAY_START = moment().startOf('day').utc(true).toDate()
+        const DAY_END = moment().endOf('day').utc(true).toDate()
 
         const todayRecords = await Attendance.findOne({
             where: {
@@ -213,7 +194,7 @@ exports.todayRecords = async(req, res) => {
             } ],
             order: [
                 // We start the order array with the model we want to sort
-                [Record, 'createdAt', 'ASC']
+                [ Record, 'createdAt', 'ASC' ]
             ]
         })
         res.send(todayRecords)
