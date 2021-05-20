@@ -10,19 +10,8 @@ const moment = require('moment')
 /* Custom POST */
 exports.liveRiders = async(req, res) => {
     try {
-        const timeZone = parseInt(req.query.zone)
-
-        const currentHour = moment().get('h')
-        let DAY_START
-        let DAY_END
-        if(currentHour < 6){
-            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
-        } else {
-            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-        }
-
+        const DAY_START = moment().startOf('day').utc(true).toDate()
+        const DAY_END = moment().endOf('day').utc(true).toDate()
         const attendances = await Attendance.findAll({
             where: {
                 status: {
@@ -40,7 +29,6 @@ exports.liveRiders = async(req, res) => {
                 }
             ],
         })
-
         res.json(attendances);
     } catch(error) {
         errorHandler(res, error);
@@ -49,19 +37,8 @@ exports.liveRiders = async(req, res) => {
 
 exports.adminTodayRecords = async(req, res) => {
     try {
-        const timeZone = parseInt(req.query.zone)
-
-        const currentHour = moment().get('h')
-        let DAY_START
-        let DAY_END
-        if(currentHour < 6){
-            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
-        } else {
-            DAY_START = moment(moment().toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().add(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-        }
-
+        const DAY_START = moment().startOf('day').utc(true).toDate()
+        const DAY_END = moment().endOf('day').utc(true).toDate()
         const todayRecords = await Attendance.findAll({
             where: {
                 createdAt: {
@@ -98,17 +75,8 @@ exports.adminTodayRecords = async(req, res) => {
 
 exports.history = async(req, res) => {
     try {
-        const timeZone = parseInt(req.query.zone)
-        const currentHour = moment().get('h')
-        let DAY_START
-        let DAY_END
-        if(currentHour < 6){
-            DAY_START = moment(moment().subtract(2, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().subtract(1, 'd').toDate().setHours(5 - timeZone, 59, 59, 0)).utc(true).toDate()
-        } else {
-            DAY_START = moment(moment().subtract(1, 'd').toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-            DAY_END = moment(moment().toDate().setHours(5 - timeZone, 59, 59, 59)).utc(true).toDate()
-        }
+        const DAY_START = moment().subtract(1, 'd').startOf('day').utc(true).toDate()
+        const DAY_END = moment().subtract(1, 'd').endOf('day').utc(true).toDate()
         const todayRecords = await Attendance.findAll({
             where: {
                 createdAt: {
@@ -135,7 +103,6 @@ exports.history = async(req, res) => {
 exports.historyAttendanceFilter = async(req, res) => {
     try {
         const date = req.query.date
-        const timeZone = req.query.zone
         const givenDate = moment(date)
         if(givenDate.diff(moment()) >= 0){
             throw {
@@ -145,10 +112,8 @@ exports.historyAttendanceFilter = async(req, res) => {
                 msg: 'choose any past date'
             }
         }
-
-        let DAY_START = moment(givenDate.toDate().setHours(6 - timeZone, 0, 0, 0)).utc(true).toDate()
-        let DAY_END = moment(givenDate.add(1,'d').toDate().setHours(5 - timeZone, 59, 59, 59)).utc(true).toDate()
-
+        const DAY_START = moment(givenDate).startOf('d').toDate()
+        const DAY_END = moment(givenDate).endOf('d').toDate()
         const givenDayAttendances = await Attendance.findAll({
             where: {
                 createdAt: {
@@ -167,7 +132,6 @@ exports.historyAttendanceFilter = async(req, res) => {
             ]
         })
         res.send(givenDayAttendances)
-
     } catch(error) {
         errorHandler(res, error);
     }
