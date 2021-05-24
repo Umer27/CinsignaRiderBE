@@ -40,10 +40,12 @@ const Record = RecordModel(sequelize, Sequelize);
 
 /*** Set Relationships ***/
 //User
-User.hasMany(Session)
+User.hasMany(Session, { onDelete: 'cascade', hooks: true })
 User.hasMany(Attendance, {
     foreignKey: 'riderId',
-    as: 'attendance'
+    as: 'attendance',
+    onDelete: 'cascade',
+    hooks: true
 })
 User.belongsTo(Shift, { as: 'shift' })
 //Session
@@ -54,7 +56,7 @@ Attendance.belongsTo(User, {
     as: 'rider'
 })
 Attendance.belongsTo(Shift)
-Attendance.hasMany(Record, { as: 'record' })
+Attendance.hasMany(Record, { as: 'record', onDelete: 'cascade', hooks: true })
 //record
 Record.belongsTo(User, { foreignKey: 'riderId', as: 'rider' })
 Record.belongsTo(Attendance)
